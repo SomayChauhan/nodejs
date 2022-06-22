@@ -1,4 +1,5 @@
 const express = require("express");
+const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ const {
 
 router.route("/products").get(get_all_products).post(create_product);
 router.route("/products/:id").get(get_product_detail).patch(update_product).delete(delete_product);
-router.route("/cart").get(get_cart).post(add_to_cart);
-router.route("/orders").get(get_orders).post(post_order);
+router.route("/cart").get(authMiddleware, get_cart).post(authMiddleware, add_to_cart);
+router.route("/orders").get(authMiddleware, get_orders).post(authMiddleware, post_order);
 
 module.exports = router;

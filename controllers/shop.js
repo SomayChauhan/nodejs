@@ -83,6 +83,7 @@ const delete_product = async (req, res, next) => {
 const update_product = async (req, res, next) => {};
 
 const get_cart = async (req, res, next) => {
+  console.log(req.user, "userrrrrrrrrr");
   const cart = await req.user.populate("cart");
   res.status(201).json(cart);
 };

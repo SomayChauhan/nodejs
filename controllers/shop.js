@@ -1,4 +1,4 @@
-const { createCustomError } = require("../errors/custom-error");
+const { createCustomError } = require("../utils/custom-error");
 const Product = require("../models/product");
 const User = require("../models/user");
 const Order = require("../models/order");

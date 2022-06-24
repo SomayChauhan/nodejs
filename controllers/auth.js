@@ -1,4 +1,4 @@
-const { createCustomError } = require("../errors/custom-error");
+const { createCustomError } = require("../utils/custom-error");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");

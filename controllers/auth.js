@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email, "email");
-  console.log(password, "password");
   const user = await User.findOne({ email: email });
   if (!user) {
     return next(createCustomError("A user with this email could not be found.", 401));

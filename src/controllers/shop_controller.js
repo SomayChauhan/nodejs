@@ -1,9 +1,9 @@
 const { createCustomError } = require("../utils/custom-error");
-const Product = require("../models/product");
-const User = require("../models/user");
-const Order = require("../models/order");
+const Product = require("../models/product_model");
+const User = require("../models/user_model");
+const Order = require("../models/order_model");
 const get_all_products = async (req, res, next) => {
-  //http://localhost:3000/api/v1/shop/products?featured=true&company=ikea&name=a&numericFilters=price>=20,rating>=4&sort=-price,-name&fields=rating,name,price
+  // http://localhost:3000/api/v1/shop/products?featured=true&company=ikea&name=a&numericFilters=price>=20,rating>=4&sort=-price,-name&fields=rating,name,price
   const { featured, company, name, sort, fields, numericFilters } = req.query;
   const queryObject = {};
 
@@ -25,7 +25,10 @@ const get_all_products = async (req, res, next) => {
       "<=": "$lte",
     };
     const regEx = /\b(<|>|>=|=|<|<=)\b/g;
-    let filters = numericFilters.replace(regEx, (match) => `-${operatorMap[match]}-`);
+    let filters = numericFilters.replace(
+      regEx,
+      (match) => `-${operatorMap[match]}-`
+    );
     const options = ["price", "rating"];
     filters = filters.split(",").forEach((item) => {
       const [field, operator, value] = item.split("-");

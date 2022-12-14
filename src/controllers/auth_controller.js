@@ -1,5 +1,5 @@
 const { createCustomError } = require("../utils/custom-error");
-const User = require("../models/user");
+const User = require("../models/user_model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -7,7 +7,9 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
-    return next(createCustomError("A user with this email could not be found.", 401));
+    return next(
+      createCustomError("A user with this email could not be found.", 401)
+    );
   }
   const isEqual = await bcrypt.compare(password, user.password);
   if (isEqual) {

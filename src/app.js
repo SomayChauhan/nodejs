@@ -1,12 +1,13 @@
 const express = require("express");
 require("express-async-errors");
-const shopRouter = require("./routes/shop");
-const authRouter = require("./routes/auth");
+const shopRouter = require("./routes/shop_routes");
+const authRouter = require("./routes/auth_routes");
+const tour_router = require("./routes/tour_routes");
 const connectDB = require("./db/connect");
 const cors = require("cors");
 
 const notFoundMiddleware = require("./middleware/not-found");
-const errorHandlerMiddleware = require("./middleware/error-handler");
+const errorHandlerMiddleware = require("./middleware/error_handling_middleware");
 
 const app = express(); //create an express app
 
@@ -15,6 +16,7 @@ app.use(cors()); // this is to fix the cors issue
 
 app.use("/api/v1/shop", shopRouter); //api/v1 is the defalut path for shop route
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/tours", tour_router);
 
 app.use(notFoundMiddleware); //runs if no route matches the routes sent in request
 app.use(errorHandlerMiddleware);

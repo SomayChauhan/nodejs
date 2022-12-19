@@ -1,52 +1,68 @@
 const { createCustomError } = require("../utils/custom-error");
 const User = require("../models/user_model");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+const signToken = (id) => {
+  return jwt.sign({ id }, "some-super-long-random-string", {
+    expiresIn: "30d",
+  });
+};
+
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("jwt", token, cookieOptions);
+
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email: email });
-  if (!user) {
-    return next(
-      createCustomError("A user with this email could not be found.", 401)
-    );
+  if (!email || !password) {
+    console.log("111111111");
+    throw createCustomError("Please provide email and password!", 400);
   }
-  const isEqual = await bcrypt.compare(password, user.password);
-  if (isEqual) {
-    const token = jwt.sign(
-      {
-        email: user.email,
-        userId: user._id.toString(),
-      },
-      "somesupersecretsecret",
-      { expiresIn: "1h" }
-    );
-    res.status(200).json({ token: token, userId: user._id.toString() });
+  const user = await User.findOne({ email });
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    throw createCustomError("Incorrect email or password", 401);
   } else {
-    return next(createCustomError("Wrong password!", 401));
+    createSendToken(new_user, 201, res);
   }
 };
 
-const logout = async (req, res, next) => {};
-
 const signup = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { name, email, password, passwordConfirm } = req.body;
   const user = await User.findOne({ email: email });
   if (!!user) {
-    return next(createCustomError("user alredy exists", 400));
+    throw createCustomError("user alredy exists", 400);
   } else {
-    const password_hash = await bcrypt.hash(password, 12);
-    await User.create({
+    const new_user = await User.create({
+      name,
       email,
-      password: password_hash,
+      password,
+      passwordConfirm,
       cart: { items: [] },
     });
-    res.status(200).json("sucessfully signed up");
+    createSendToken(new_user, 201, res);
   }
 };
 
 module.exports = {
   login,
-  logout,
   signup,
 };

@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 require("express-async-errors");
 const shop_router = require("./routes/shop_routes");
 const auth_router = require("./routes/auth_routes");
@@ -7,19 +8,20 @@ const connectDB = require("./db/connect");
 const cors = require("cors");
 
 const notFoundMiddleware = require("./middleware/not-found");
-const errorHandlerMiddleware = require("./middleware/error_handling_middleware");
+const error_handler = require("./middleware/error_handler");
 
 const app = express(); //create an express app
 
 app.use(express.json()); // does JSON.parse() on every request data object
 app.use(cors()); // this is to fix the cors issue
+app.use(cookieParser());
 
-app.use("/api/v1/shop", shop_router); //api/v1 is the defalut path for shop route
+app.use("/api/v1/shop", shop_router);
 app.use("/api/v1/auth", auth_router);
 app.use("/api/v1/tours", tour_router);
 
 app.use(notFoundMiddleware); //runs if no route matches the routes sent in request
-app.use(errorHandlerMiddleware);
+app.use(error_handler);
 
 const start = async () => {
   const callback = () => {

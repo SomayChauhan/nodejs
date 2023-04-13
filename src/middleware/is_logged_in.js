@@ -1,23 +1,18 @@
 const User = require("../models/user_model");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
-const { createCustomError } = require("../utils/custom-error");
+const { createCustomError } = require("../utils/custom_error");
 
-const authMiddleware = async (req, res, next) => {
-  let token;
+const is_logged_in = async (req, res, next) => {
   // 1) Getting token and check of it's there
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
+  if (!req.cookies.jwt) {
     throw createCustomError(
       "You are not logged in! Please log in to get access.",
       401
     );
   }
+
+  let token = req.cookies.jwt;
 
   // 2) Verifing token
   const decoded = await promisify(jwt.verify)(
@@ -47,5 +42,4 @@ const authMiddleware = async (req, res, next) => {
   next();
 };
 
-
-module.exports = authMiddleware;
+module.exports = is_logged_in;

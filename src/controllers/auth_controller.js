@@ -1,4 +1,4 @@
-const { createCustomError } = require("../utils/custom-error");
+const { createCustomError } = require("../utils/custom_error");
 const User = require("../models/user_model");
 const jwt = require("jsonwebtoken");
 
@@ -23,7 +23,7 @@ const createSendToken = (user, statusCode, res) => {
 
   res.status(statusCode).json({
     status: "success",
-    token,
+    // token,
     data: {
       user,
     },
@@ -33,15 +33,14 @@ const createSendToken = (user, statusCode, res) => {
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    console.log("111111111");
     throw createCustomError("Please provide email and password!", 400);
   }
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     throw createCustomError("Incorrect email or password", 401);
   } else {
-    createSendToken(new_user, 201, res);
+    createSendToken(user, 201, res);
   }
 };
 

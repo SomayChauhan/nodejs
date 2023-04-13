@@ -1,5 +1,5 @@
 const express = require("express");
-const authMiddleware = require("../middleware/auth_middleware");
+const is_logged_in = require("../middleware/is_logged_in");
 
 const router = express.Router();
 
@@ -23,11 +23,11 @@ router
   .delete(delete_product);
 router
   .route("/cart")
-  .get(authMiddleware, get_cart)
-  .post(authMiddleware, add_to_cart);
+  .get(is_logged_in, get_cart)
+  .post(is_logged_in, add_to_cart);
 router
   .route("/orders")
-  .get(authMiddleware, get_orders)
-  .post(authMiddleware, post_order);
+  .get(is_logged_in, get_orders)
+  .post(is_logged_in, post_order);
 
 module.exports = router;

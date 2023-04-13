@@ -1,61 +1,15 @@
-const { createCustomError } = require("../utils/custom-error");
+const { createCustomError } = require("../utils/custom_error");
 const Product = require("../models/product_model");
 const Order = require("../models/order_model");
-const APIStructuring = require("../utils/api_structuring");
+const data_factory = require("../utils/data_factory");
 
-const get_all_products = async (req, res, next) => {
-  const features = new APIStructuring(Product.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const products = await features.query;
-  res.status(200).json({
-    status: "success",
-    results: tours.length,
-    data: {
-      products,
-    },
-  });
-};
-
-const create_product = async (req, res, next) => {
-  const product = await Product.create(req.body);
-  res.status(201).json({
-    status: "success",
-    data: {
-      product,
-    },
-  });
-};
-
-const get_product_detail = async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findOne({ _id: id });
-  res.status(200).json({
-    status: "success",
-    data: {
-      product,
-    },
-  });
-};
-
-const delete_product = async (req, res, next) => {
-  const { id } = req.params;
-  const product = await Product.findOneAndDelete({ _id: id });
-  if (!product) {
-    return next(createCustomError(`No product with id : ${id}`, 404));
-  }
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-};
-
-const update_product = async (req, res, next) => {};
+const get_all_products = data_factory.getAll(Product);
+const create_product = data_factory.createOne(Product);
+const get_product_detail = data_factory.getOne(Product);
+const delete_product = data_factory.deleteOne(Product);
+const update_product = data_factory.updateOne(Product);
 
 const get_cart = async (req, res, next) => {
-  console.log(req.user, "userrrrrrrrrr");
   const cart = await req.user.populate("cart");
   res.status(201).json(cart);
 };
